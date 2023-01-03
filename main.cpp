@@ -38,7 +38,8 @@ int main() {
     }
 
     ifstream qual_pomoc;
-    qual_pomoc.open("C:\\Users\\Administrator\\CLionProjects\\algorytmy_kombinatoryczne_3\\instancja1.qual", fstream::in);
+    qual_pomoc.open("C:\\Users\\Administrator\\CLionProjects\\algorytmy_kombinatoryczne_3\\instancja1.qual",
+                    fstream::in);
 
     if (!qual_pomoc) {
         cout << "Blad otwierania pomocnieczego pliku typu .qual." << endl;
@@ -48,9 +49,12 @@ int main() {
 
     vector<string> lines;
     string line;
+    string line_pomoc;
+    char i = '\n'; // tez pomoc line
     int lines_nr = 0;
     int spaces;
     int licznik; // licznik nukleotydow
+    int przelacznik = 0; // gdy == 1 to bierzemy cred2 zamiast cred
 
     while (!qual_pomoc.eof()) {
         getline(qual_pomoc, line);
@@ -63,6 +67,7 @@ int main() {
     char letter = 'n';
     string credibility;
     int cred;
+    int cred2;
     int sequence_id = 1;
 
     while (!fastafile.eof()) {
@@ -75,12 +80,12 @@ int main() {
         }
 
         qualfile.seekg(0);
-        spaces =  0;
+        spaces = 0;
         while (!qualfile.eof()) {
-            getline(qualfile, qual);;
+            getline(qualfile, qual);
             lines_nr++;
             if (qual == fasta) {
-                for (auto& n : lines[lines_nr]) {
+                for (auto &n: lines[lines_nr]) {
                     if (n == ' ') {
                         spaces++;
                     }
@@ -92,27 +97,45 @@ int main() {
 
         while (letter != '>' && letter != EOF) {
             cout << letter << "  ";
-            cout << "linijka 53" << endl;
             if (letter != '>') {
                 letter = fastafile.get();
-                cout << "linijka 55" << endl;
                 if (letter == '\n') {
                     letter = fastafile.get();
-                    cout << "linijka 58" << endl;
                 }
                 if (letter != '>') {
                     if (licznik != spaces) {
                         getline(qualfile, credibility, ' ');
                         licznik++;
                         cout << "linijka 62 credibility: " << credibility << endl;
-                    }
-                    else {
-                        getline(qualfile, credibility, '\n');
-                        licznik = 0;
-                        cout << "linijka 62 credibility: " << credibility << endl;
-                    }
                         cred = stoi(credibility);
-                        cout << "linijka 68" << endl;
+                    } else {
+                        lines_nr++;
+                        getline(qualfile, credibility, '\n');
+                        cout << "linijka 63 credibility: " << credibility << endl;
+                        licznik = 0;
+                        spaces = 0;
+                        for (auto &n: lines[lines_nr]) {
+                            if (n == ' ') {
+                                spaces++;
+                            }
+                        }
+                        line_pomoc = "";
+                        for (auto& m : lines[lines_nr]) {
+                                if (m != ' ') {
+                                    line_pomoc = line_pomoc + m;
+                                }
+                                else {
+                                    break;
+                                }
+                        }
+                        if (line_pomoc[0] == '>') {
+                            cout << "line_pomoc break: " << line_pomoc << endl;
+                            break;
+                        }
+                        else {
+                            cout << "line_pomoc: " << line_pomoc << endl;
+                            cred = stoi(credibility);
+                        }
                         if (sequence_id == 1)
                             nucleotide_cred1.emplace_back(make_pair(letter, cred));
                         else if (sequence_id == 2)
@@ -123,17 +146,29 @@ int main() {
                             nucleotide_cred4.emplace_back(make_pair(letter, cred));
                         else if (sequence_id == 5)
                             nucleotide_cred5.emplace_back(make_pair(letter, cred));
-                        cout << "linijka 70" << endl;
+
+                        cred = stoi(line_pomoc);
+                    }
+                        if (sequence_id == 1)
+                            nucleotide_cred1.emplace_back(make_pair(letter, cred));
+                        else if (sequence_id == 2)
+                            nucleotide_cred2.emplace_back(make_pair(letter, cred));
+                        else if (sequence_id == 3)
+                            nucleotide_cred3.emplace_back(make_pair(letter, cred));
+                        else if (sequence_id == 4)
+                            nucleotide_cred4.emplace_back(make_pair(letter, cred));
+                        else if (sequence_id == 5)
+                            nucleotide_cred5.emplace_back(make_pair(letter, cred));
+                    }
                 }
             }
+            sequence_id++;
         }
-        sequence_id++;
-    }
 
-    cout << "sekwencja 1: ";
-    for (auto &n: nucleotide_cred1) {
-        cout << n.first << ' ' << n.second << endl;
-    }
+        cout << "sekwencja 1: ";
+        for (auto &n: nucleotide_cred1) {
+            cout << n.first << ' ' << n.second << endl;
+        }
 
-    return 0;
-}
+        return 0;
+    }
