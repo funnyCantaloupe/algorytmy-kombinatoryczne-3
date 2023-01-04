@@ -107,24 +107,24 @@ int main() {
                         spaces++;
                     }
                 }
-                cout << "lines[lines_nr]: " << lines[lines_nr] << endl;
+                //cout << "lines[lines_nr]: " << lines[lines_nr] << endl;
                 break;
             }
         }
 
-        cout << "linie w pliku: " << linie_w_pliku << endl;
+        //cout << "linie w pliku: " << linie_w_pliku << endl;
 
         while (letter != '>' && letter != EOF) {
                 letter = fastafile.get();
                 if (letter == '\n') {
                     letter = fastafile.get();
                 }
-                cout << " spaces: " << spaces <<  endl;
+                //cout << " spaces: " << spaces <<  endl;
                 if (letter != '>') {
                     if (licznik != spaces) {
                         getline(qualfile, credibility, ' ');
                         licznik++;
-                        cout << "credibility: " << credibility << " letter: " << letter << endl;
+                        //cout << "credibility: " << credibility << " letter: " << letter << endl;
                         cred = stoi(credibility);
                     }
                     else if (lines_nr == linie_w_pliku && licznik == spaces) {
@@ -136,7 +136,7 @@ int main() {
                     else {
                         lines_nr++;
                         getline(qualfile, credibility, '\n');
-                        cout << "credibility: " << credibility << " letter: " << letter << endl;
+                        //cout << "credibility: " << credibility << " letter: " << letter << endl;
                         licznik = 0;
                         spaces = 0;
                         for (auto &n: lines[lines_nr]) {
@@ -154,13 +154,13 @@ int main() {
                                 }
                         }
                         if (line_pomoc[0] == '>') {
-                            cout << "line_pomoc break: " << line_pomoc << " line_nr: " << lines_nr << endl;
+                            //cout << "line_pomoc break: " << line_pomoc << " line_nr: " << lines_nr << endl;
                             cred = stoi(credibility);
                             pair_up(letter, cred, sequence_id);
                             break;
                         }
                         else {
-                            cout << "line_pomoc: " << line_pomoc << " line_nr: " << lines_nr << endl;
+                            //cout << "line_pomoc: " << line_pomoc << " line_nr: " << lines_nr << endl;
                             cred = stoi(credibility);
                             pair_up(letter, cred, sequence_id);
                             dolaczono = true;
@@ -175,11 +175,9 @@ int main() {
                 }
             }
             sequence_id++;
-            cout << "test" << endl;
         }
 
-    cout << "czy to dziala?" << endl;
-
+/*
         cout << "sekwencja 1: " << endl;
         for (auto &n: nucleotide_cred1) {
             cout << n.first << ' ' << n.second << endl;
@@ -205,8 +203,79 @@ int main() {
             cout << n.first << ' ' << n.second << endl;
         }
 
+        */
+
         fastafile.close();
         qualfile.close();
+
+        // usuwanie z wczytanych sekwencji nukleotydowych pozycji o wiarygodności pewnego założonego progu
+
+        int prog;
+
+        cout << "Podaj prog wiarygodnosci:";
+        cin >> prog;
+
+        vector<pair<char, int>> pozycje1; // pozycje nukleotydow - nie ma tu juz wiarygodnosci, bo nie bedzie potrzebna, za to jest pozycja w sekwencji wejsciowej
+        vector<pair<char, int>> pozycje2;
+        vector<pair<char, int>> pozycje3;
+        vector<pair<char, int>> pozycje4;
+        vector<pair<char, int>> pozycje5;
+
+        int id_od_1 = 1;
+
+        for (auto& n : nucleotide_cred1) {
+            if (n.second >= prog) {
+                pozycje1.emplace_back((make_pair(n.first, id_od_1)));
+            }
+            id_od_1++;
+        }
+
+        id_od_1 = 1;
+        for (auto& n : nucleotide_cred2) {
+            if (n.second >= prog) {
+                pozycje2.emplace_back((make_pair(n.first, id_od_1)));
+            }
+            id_od_1++;
+        }
+
+        id_od_1 = 1;
+        for (auto& n : nucleotide_cred3) {
+            if (n.second >= prog) {
+                pozycje3.emplace_back((make_pair(n.first, id_od_1)));
+            }
+            id_od_1++;
+        }
+
+        id_od_1 = 1;
+        for (auto& n : nucleotide_cred4) {
+            if (n.second >= prog) {
+                pozycje4.emplace_back((make_pair(n.first, id_od_1)));
+            }
+            id_od_1++;
+        }
+
+        id_od_1 = 1;
+        for (auto& n : nucleotide_cred5) {
+            if (n.second >= prog) {
+                pozycje5.emplace_back((make_pair(n.first, id_od_1)));
+            }
+            id_od_1++;
+        }
+
+
+
+        for (auto& n : pozycje1) {
+            cout << n.first << ' ' << n.second << endl;
+        }
+
+
+        int dlugosc_podciagu;
+
+        cout << "Podaj dlugosc podciagu (4-9): ";
+        cin >> dlugosc_podciagu;
+
+
+
 
         return 0;
     }
