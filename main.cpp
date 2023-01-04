@@ -54,7 +54,6 @@ int main() {
     int lines_nr = 0;
     int spaces;
     int licznik; // licznik nukleotydow
-    int przelacznik = 0; // gdy == 1 to bierzemy cred2 zamiast cred
 
     while (!qual_pomoc.eof()) {
         getline(qual_pomoc, line);
@@ -67,7 +66,6 @@ int main() {
     char letter = 'n';
     string credibility;
     int cred;
-    int cred2;
     int sequence_id = 1;
 
     while (!fastafile.eof()) {
@@ -81,6 +79,7 @@ int main() {
 
         qualfile.seekg(0);
         spaces = 0;
+        lines_nr = 0;
         while (!qualfile.eof()) {
             getline(qualfile, qual);
             lines_nr++;
@@ -90,28 +89,28 @@ int main() {
                         spaces++;
                     }
                 }
+                cout << "lines[lines_nr]: " << lines[lines_nr] << endl;
                 break;
             }
         }
-        cout << "spacje: " << spaces << endl;
 
         while (letter != '>' && letter != EOF) {
-            cout << letter << "  ";
             if (letter != '>') {
                 letter = fastafile.get();
                 if (letter == '\n') {
                     letter = fastafile.get();
                 }
+                cout << " spaces: " << spaces <<  endl;
                 if (letter != '>') {
                     if (licznik != spaces) {
                         getline(qualfile, credibility, ' ');
                         licznik++;
-                        cout << "linijka 62 credibility: " << credibility << endl;
+                        cout << "credibility: " << credibility << " letter: " << letter << endl;
                         cred = stoi(credibility);
                     } else {
                         lines_nr++;
                         getline(qualfile, credibility, '\n');
-                        cout << "linijka 63 credibility: " << credibility << endl;
+                        cout << "credibility: " << credibility << " letter: " << letter << endl;
                         licznik = 0;
                         spaces = 0;
                         for (auto &n: lines[lines_nr]) {
@@ -129,11 +128,11 @@ int main() {
                                 }
                         }
                         if (line_pomoc[0] == '>') {
-                            cout << "line_pomoc break: " << line_pomoc << endl;
+                            cout << "line_pomoc break: " << line_pomoc << " line_nr: " << lines_nr << endl;
                             break;
                         }
                         else {
-                            cout << "line_pomoc: " << line_pomoc << endl;
+                            cout << "line_pomoc: " << line_pomoc << " line_nr: " << lines_nr << endl;
                             cred = stoi(credibility);
                         }
                         if (sequence_id == 1)
