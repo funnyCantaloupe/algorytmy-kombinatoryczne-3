@@ -212,7 +212,7 @@ int main() {
 
         int prog;
 
-        cout << "Podaj prog wiarygodnosci:";
+        cout << "Podaj prog wiarygodnosci (0-40):";
         cin >> prog;
 
         vector<pair<char, int>> pozycje1; // pozycje nukleotydow - nie ma tu juz wiarygodnosci, bo nie bedzie potrzebna, za to jest pozycja w sekwencji wejsciowej
@@ -220,6 +220,14 @@ int main() {
         vector<pair<char, int>> pozycje3;
         vector<pair<char, int>> pozycje4;
         vector<pair<char, int>> pozycje5;
+
+        struct Triplet {
+            string okienko;
+            int nr_sekwencji;
+            int nr_w_sekwencji;
+        };
+
+    vector<Triplet> wierzcholki;
 
         int id_od_1 = 1;
 
@@ -263,18 +271,61 @@ int main() {
         }
 
 
-
+/*
         for (auto& n : pozycje1) {
             cout << n.first << ' ' << n.second << endl;
         }
-
+*/
 
         int dlugosc_podciagu;
 
-        cout << "Podaj dlugosc podciagu (4-9): ";
+        cout << "Podaj dlugosc podciagu (4-9):";
         cin >> dlugosc_podciagu;
 
+        //GENEROWANIE OKIENEK
+        vector<string> okienka;
+        vector<char> okienka_temp;
+        string okienka_string;
 
+        int liczba_okienek = pozycje1.size() + pozycje2.size() + pozycje3.size() + pozycje4.size() + pozycje5.size() - 5*dlugosc_podciagu + 5; // wynika to z faktu, ze liczba okienek to (liczba nukleotydow - dlugosc podciagu + 1), a tu razy 5, bo jest 5 wektorów
+        int okienka_id = 0;
+        int index;
+
+        for (int i = 0; i < liczba_okienek; i++) //tyle jest okienek
+        {
+            index = i;
+            for (int j = 0; j < dlugosc_podciagu; j++) //taka maja dlugosc okienka
+            {
+                okienka_temp.push_back(pozycje1[index].first);
+                index++;
+            }
+            okienka_string = "";
+            for (auto& n : okienka_temp) {
+                okienka_string = okienka_string + n;
+            }
+            okienka.push_back(okienka_string);
+            okienka_temp.clear();
+            if (okienka_id < pozycje1.size()) {
+                wierzcholki.push_back({okienka_string, 1, pozycje1[okienka_id].second});
+            }
+            else if (okienka_id < pozycje1.size() + pozycje2.size()) {
+                wierzcholki.push_back({okienka_string, 2, pozycje2[okienka_id - pozycje1.size()].second});
+            }
+            else if (okienka_id < pozycje1.size() + pozycje2.size() + pozycje3.size()) {
+                wierzcholki.push_back({okienka_string, 3, pozycje3[okienka_id - pozycje1.size() - pozycje2.size()].second});
+            }
+            else if (okienka_id < pozycje1.size() + pozycje2.size() + pozycje3.size() + pozycje4.size()) {
+                wierzcholki.push_back({okienka_string, 4, pozycje4[okienka_id - pozycje1.size() - pozycje2.size() - pozycje3.size()].second});
+            }
+            else {
+                wierzcholki.push_back({okienka_string, 5, pozycje5[okienka_id - pozycje1.size() - pozycje2.size() - pozycje3.size() - pozycje4.size()].second});
+            }
+            okienka_id++;
+        }
+
+        for (auto& n : wierzcholki) {
+            cout << n.okienko << ' ' << n.nr_sekwencji << ' ' << n.nr_w_sekwencji << endl;
+        }
 
 
         return 0;
