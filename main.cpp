@@ -400,12 +400,43 @@ int main() {
             okienka_id++;
         }
 
-
+/*
         for (auto& n : wierzcholki) {
             cout << n.okienko << ' ' << n.nr_sekwencji << ' ' << n.nr_w_sekwencji << endl;
         }
+*/
 
+        // laczenie krawedziami nieskierowanymi
+        // jeśli odpowiadają one takim samym podciągom występującym w różnych sekwencjach,
+        // a różnica w pozycjach podciągów wewnątrz sekwencji nie jest większa niż dziesięciokrotność długości podciągu
 
+        struct krawedz {
+            Triplet wierzcholek1;
+            Triplet wierzcholek2;
+        };
+
+        vector<krawedz> graf;
+
+        for (int i = 0; i < wierzcholki.size(); i++) {
+            for (int j = 0; j < wierzcholki.size(); j ++) {
+                if (i != j && wierzcholki[i].okienko == wierzcholki[j].okienko && wierzcholki[i].nr_sekwencji != wierzcholki[j].nr_sekwencji && (abs(wierzcholki[i].nr_w_sekwencji - wierzcholki[j].nr_w_sekwencji) <= 10*dlugosc_podciagu)) {
+                    graf.push_back({wierzcholki[i], wierzcholki[j]});
+                }
+            }
+        }
+
+        /*
+        for (int i = 0; i < graf.size(); i++) {
+            for (int j = 0; j < graf.size(); j++) {
+                if (i != j && (graf[i].wierzcholek1 == graf[j].wierzcholek2)
+            }
+        }
+         */
+
+        for (auto& n : graf) {
+            cout << n.wierzcholek1.okienko << ' ' << n.wierzcholek1.nr_sekwencji << ' ' << n.wierzcholek1.nr_w_sekwencji << "    ";
+            cout << n.wierzcholek2.okienko << ' ' << n.wierzcholek2.nr_sekwencji << ' ' << n.wierzcholek2.nr_w_sekwencji << endl;
+        }
 
         wierzcholki.clear();
         okienka.clear();
