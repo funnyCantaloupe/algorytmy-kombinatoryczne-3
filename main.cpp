@@ -291,6 +291,8 @@ int main() {
         int okienka_id = 0;
         int index;
 
+        liczba_okienek = pozycje1.size() - dlugosc_podciagu + 1;
+
         for (int i = 0; i < liczba_okienek; i++) //tyle jest okienek
         {
             index = i;
@@ -305,28 +307,114 @@ int main() {
             }
             okienka.push_back(okienka_string);
             okienka_temp.clear();
-            if (okienka_id < pozycje1.size()) {
-                wierzcholki.push_back({okienka_string, 1, pozycje1[okienka_id].second});
-            }
-            else if (okienka_id < pozycje1.size() + pozycje2.size()) {
-                wierzcholki.push_back({okienka_string, 2, pozycje2[okienka_id - pozycje1.size()].second});
-            }
-            else if (okienka_id < pozycje1.size() + pozycje2.size() + pozycje3.size()) {
-                wierzcholki.push_back({okienka_string, 3, pozycje3[okienka_id - pozycje1.size() - pozycje2.size()].second});
-            }
-            else if (okienka_id < pozycje1.size() + pozycje2.size() + pozycje3.size() + pozycje4.size()) {
-                wierzcholki.push_back({okienka_string, 4, pozycje4[okienka_id - pozycje1.size() - pozycje2.size() - pozycje3.size()].second});
-            }
-            else {
-                wierzcholki.push_back({okienka_string, 5, pozycje5[okienka_id - pozycje1.size() - pozycje2.size() - pozycje3.size() - pozycje4.size()].second});
-            }
+
+            wierzcholki.push_back({okienka_string, 1, pozycje1[okienka_id].second});
             okienka_id++;
         }
+
+        liczba_okienek = pozycje2.size() - dlugosc_podciagu + 1;
+        okienka_id = 0;
+
+        for (int i = 0; i < liczba_okienek; i++) //tyle jest okienek
+        {
+            index = i;
+            for (int j = 0; j < dlugosc_podciagu; j++) //taka maja dlugosc okienka
+            {
+                okienka_temp.push_back(pozycje2[index].first);
+                index++;
+            }
+            okienka_string = "";
+            for (auto& n : okienka_temp) {
+                okienka_string = okienka_string + n;
+            }
+            okienka.push_back(okienka_string);
+            okienka_temp.clear();
+
+            wierzcholki.push_back({okienka_string, 2, pozycje2[okienka_id].second});
+            okienka_id++;
+        }
+
+        liczba_okienek = pozycje3.size() - dlugosc_podciagu + 1;
+        okienka_id = 0;
+
+        for (int i = 0; i < liczba_okienek; i++) //tyle jest okienek
+        {
+            index = i;
+            for (int j = 0; j < dlugosc_podciagu; j++) //taka maja dlugosc okienka
+            {
+                okienka_temp.push_back(pozycje3[index].first);
+                index++;
+            }
+            okienka_string = "";
+            for (auto& n : okienka_temp) {
+                okienka_string = okienka_string + n;
+            }
+            okienka.push_back(okienka_string);
+            okienka_temp.clear();
+
+            wierzcholki.push_back({okienka_string, 3, pozycje3[okienka_id].second});
+            okienka_id++;
+        }
+
+        liczba_okienek = pozycje4.size() - dlugosc_podciagu + 1;
+        okienka_id = 0;
+
+        for (int i = 0; i < liczba_okienek; i++) //tyle jest okienek
+        {
+            index = i;
+            for (int j = 0; j < dlugosc_podciagu; j++) //taka maja dlugosc okienka
+            {
+                okienka_temp.push_back(pozycje4[index].first);
+                index++;
+            }
+            okienka_string = "";
+            for (auto& n : okienka_temp) {
+                okienka_string = okienka_string + n;
+            }
+            okienka.push_back(okienka_string);
+            okienka_temp.clear();
+
+            wierzcholki.push_back({okienka_string, 4, pozycje4[okienka_id].second});
+            okienka_id++;
+        }
+
+        liczba_okienek = pozycje5.size() - dlugosc_podciagu + 1;
+        okienka_id = 0;
+
+        for (int i = 0; i < liczba_okienek; i++) //tyle jest okienek
+        {
+            index = i;
+            for (int j = 0; j < dlugosc_podciagu; j++) //taka maja dlugosc okienka
+            {
+                okienka_temp.push_back(pozycje5[index].first);
+                index++;
+            }
+            okienka_string = "";
+            for (auto& n : okienka_temp) {
+                okienka_string = okienka_string + n;
+            }
+            okienka.push_back(okienka_string);
+            okienka_temp.clear();
+
+            wierzcholki.push_back({okienka_string, 5, pozycje5[okienka_id].second});
+            okienka_id++;
+        }
+
 
         for (auto& n : wierzcholki) {
             cout << n.okienko << ' ' << n.nr_sekwencji << ' ' << n.nr_w_sekwencji << endl;
         }
 
+
+
+        wierzcholki.clear();
+        okienka.clear();
+        okienka_temp.clear();
+        pozycje1.clear();
+        pozycje2.clear();
+        pozycje3.clear();
+        pozycje4.clear();
+        pozycje5.clear();
 
         return 0;
     }
