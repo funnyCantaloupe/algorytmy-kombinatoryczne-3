@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <stdio.h>
+#include <compare>
 
 using namespace std;
 
@@ -425,13 +426,19 @@ int main() {
             }
         }
 
-        /*
+
+        // usuwanie duplikatow krawedzi
+        
         for (int i = 0; i < graf.size(); i++) {
             for (int j = 0; j < graf.size(); j++) {
-                if (i != j && (graf[i].wierzcholek1 == graf[j].wierzcholek2)
+                if (i != j && ((graf[i].wierzcholek1.okienko == graf[j].wierzcholek2.okienko) && (graf[i].wierzcholek1.nr_sekwencji == graf[j].wierzcholek2.nr_sekwencji) && (graf[i].wierzcholek1.nr_w_sekwencji == graf[j].wierzcholek2.nr_w_sekwencji))) {
+                    if ((graf[j].wierzcholek1.okienko == graf[i].wierzcholek2.okienko) && (graf[j].wierzcholek1.nr_sekwencji == graf[i].wierzcholek2.nr_sekwencji) && (graf[j].wierzcholek1.nr_w_sekwencji == graf[i].wierzcholek2.nr_w_sekwencji)) {
+                        graf.erase(graf.begin() + j);
+                    }
+                }
             }
         }
-         */
+
 
         for (auto& n : graf) {
             cout << n.wierzcholek1.okienko << ' ' << n.wierzcholek1.nr_sekwencji << ' ' << n.wierzcholek1.nr_w_sekwencji << "    ";
