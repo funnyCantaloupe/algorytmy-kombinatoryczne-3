@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 #include <stdio.h>
-#include <compare>
 
 using namespace std;
 
@@ -12,6 +11,77 @@ vector<pair<char, int>> nucleotide_cred2;
 vector<pair<char, int>> nucleotide_cred3;
 vector<pair<char, int>> nucleotide_cred4;
 vector<pair<char, int>> nucleotide_cred5;
+
+struct Triplet {
+    string okienko;
+    int nr_sekwencji;
+    int nr_w_sekwencji;
+};
+
+vector<Triplet> wierzcholki;
+
+struct krawedz {
+    Triplet wierzcholek1;
+    Triplet wierzcholek2;
+};
+
+vector<krawedz> graf;
+vector<Triplet> gwiazda;
+
+int id_erase = 0;
+
+class Exception : public exception {
+private:
+    char * message = "\nGwiazda nie istnieje dla podanych parametrow.";
+
+public:
+    Exception(char * msg) : message(msg) {}
+    char * what () {
+        return message;
+    }
+};
+
+
+vector<Triplet> znajdz_gwiazde() {
+    for (auto& n : wierzcholki) {
+        for (auto& m : graf) {
+            if ((n.okienko == m.wierzcholek1.okienko && n.nr_sekwencji == m.wierzcholek1.nr_sekwencji && n.nr_w_sekwencji == m.wierzcholek1.nr_w_sekwencji) || (n.okienko == m.wierzcholek2.okienko && n.nr_sekwencji == m.wierzcholek2.nr_sekwencji && n.nr_w_sekwencji == m.wierzcholek2.nr_w_sekwencji)) {
+                gwiazda.push_back(n);
+                graf.erase(graf.begin() + id_erase);
+                for (auto& q : graf) {
+                    if ((n.okienko == q.wierzcholek1.okienko && n.nr_sekwencji != q.wierzcholek1.nr_sekwencji) || (n.okienko == q.wierzcholek2.okienko && n.nr_sekwencji != q.wierzcholek2.nr_sekwencji)) {
+                        for (auto& g : gwiazda) {
+                            if (n.okienko == q.wierzcholek1.okienko && q.wierzcholek1.nr_sekwencji == g.nr_sekwencji) {
+                                continue;
+                            }
+                            else if (n.okienko == q.wierzcholek2.okienko && q.wierzcholek2.nr_sekwencji == g.nr_sekwencji) {
+                                continue;
+                            }
+                        }
+                        if (n.okienko == q.wierzcholek1.okienko) {
+                            gwiazda.push_back(q.wierzcholek1);
+                            graf.erase(graf.begin() + id_erase);
+                        }
+                        else if (n.okienko == q.wierzcholek2.okienko) {
+                            gwiazda.push_back(q.wierzcholek2);
+                            graf.erase(graf.begin() + id_erase);
+                        }
+                        if (gwiazda.size() == 5) {
+                            return gwiazda;
+                        }
+                    }
+                }
+                gwiazda.clear();
+            }
+            id_erase++;
+        }
+    }
+    try {
+        throw Exception("\nGwiazda nie istnieje dla podanych parametrow.");
+    } catch (Exception mce) {
+        cout << mce.what();
+    }
+}
 
 void pair_up(char letter, int cred, int sequence_id) {
     if (sequence_id == 1)
@@ -213,7 +283,7 @@ int main() {
 
         int prog;
 
-        cout << "Podaj prog wiarygodnosci (0-40):";
+        cout << "\nPodaj prog wiarygodnosci (0-40):";
         cin >> prog;
 
         vector<pair<char, int>> pozycje1; // pozycje nukleotydow - nie ma tu juz wiarygodnosci, bo nie bedzie potrzebna, za to jest pozycja w sekwencji wejsciowej
@@ -222,13 +292,6 @@ int main() {
         vector<pair<char, int>> pozycje4;
         vector<pair<char, int>> pozycje5;
 
-        struct Triplet {
-            string okienko;
-            int nr_sekwencji;
-            int nr_w_sekwencji;
-        };
-
-    vector<Triplet> wierzcholki;
 
         int id_od_1 = 1;
 
@@ -288,7 +351,7 @@ int main() {
         vector<char> okienka_temp;
         string okienka_string;
 
-        int liczba_okienek = pozycje1.size() + pozycje2.size() + pozycje3.size() + pozycje4.size() + pozycje5.size() - 5*dlugosc_podciagu + 5; // wynika to z faktu, ze liczba okienek to (liczba nukleotydow - dlugosc podciagu + 1), a tu razy 5, bo jest 5 wektorów
+        int liczba_okienek;
         int okienka_id = 0;
         int index;
 
@@ -401,22 +464,16 @@ int main() {
             okienka_id++;
         }
 
-/*
+        cout << "\nWierzcholki: " << endl;
         for (auto& n : wierzcholki) {
             cout << n.okienko << ' ' << n.nr_sekwencji << ' ' << n.nr_w_sekwencji << endl;
         }
-*/
+
 
         // laczenie krawedziami nieskierowanymi
         // jeśli odpowiadają one takim samym podciągom występującym w różnych sekwencjach,
         // a różnica w pozycjach podciągów wewnątrz sekwencji nie jest większa niż dziesięciokrotność długości podciągu
 
-        struct krawedz {
-            Triplet wierzcholek1;
-            Triplet wierzcholek2;
-        };
-
-        vector<krawedz> graf;
 
         for (int i = 0; i < wierzcholki.size(); i++) {
             for (int j = 0; j < wierzcholki.size(); j ++) {
@@ -439,10 +496,25 @@ int main() {
             }
         }
 
+        // wyswietlanie krawedzi
 
+        cout << "\nKrawedzie: " << endl;
         for (auto& n : graf) {
             cout << n.wierzcholek1.okienko << ' ' << n.wierzcholek1.nr_sekwencji << ' ' << n.wierzcholek1.nr_w_sekwencji << "    ";
             cout << n.wierzcholek2.okienko << ' ' << n.wierzcholek2.nr_sekwencji << ' ' << n.wierzcholek2.nr_w_sekwencji << endl;
+        }
+
+        // wyszukanie w grafie w sposób heurystyczny kliki lub struktury zbliżonej do kliki,
+        // w której każda sekwencja wejściowa będzie reprezentowana dokładnie jednym wierzchołkiem
+
+        znajdz_gwiazde();
+
+        // wypisywanie wyniku:
+
+        cout << "\nWYNIK: " << endl;
+        cout << "Sekwencja nukleotydowa: " << gwiazda[0].okienko << endl;
+        for (auto& n : gwiazda) {
+            cout << "Numer sekwencji wejsciowej: " << n.nr_sekwencji << "    Pozycja w sekwencji wejsciowej: " << n.nr_w_sekwencji << endl;
         }
 
         wierzcholki.clear();
