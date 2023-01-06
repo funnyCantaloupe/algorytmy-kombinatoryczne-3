@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <stdio.h>
+#include <algorithm>
 
 using namespace std;
 
@@ -28,60 +29,48 @@ struct krawedz {
 vector<krawedz> graf;
 vector<Triplet> gwiazda;
 
-int id_erase = 0;
+int id_wierzcholki = 0;
+int id_graf = 0;
 
-class Exception : public exception {
-private:
-    char * message = "\nGwiazda nie istnieje dla podanych parametrow.";
+int zamiast_continue;
 
-public:
-    Exception(char * msg) : message(msg) {}
-    char * what () {
-        return message;
-    }
-};
-
+vector<int> seq_number = {0, 0, 0, 0, 0, 0};
 
 vector<Triplet> znajdz_gwiazde() {
-    for (auto& n : wierzcholki) {
-        for (auto& m : graf) {
-            if ((n.okienko == m.wierzcholek1.okienko && n.nr_sekwencji == m.wierzcholek1.nr_sekwencji && n.nr_w_sekwencji == m.wierzcholek1.nr_w_sekwencji) || (n.okienko == m.wierzcholek2.okienko && n.nr_sekwencji == m.wierzcholek2.nr_sekwencji && n.nr_w_sekwencji == m.wierzcholek2.nr_w_sekwencji)) {
-                gwiazda.push_back(n);
-                graf.erase(graf.begin() + id_erase);
-                for (auto& q : graf) {
-                    if ((n.okienko == q.wierzcholek1.okienko && n.nr_sekwencji != q.wierzcholek1.nr_sekwencji) || (n.okienko == q.wierzcholek2.okienko && n.nr_sekwencji != q.wierzcholek2.nr_sekwencji)) {
-                        for (auto& g : gwiazda) {
-                            if (n.okienko == q.wierzcholek1.okienko && q.wierzcholek1.nr_sekwencji == g.nr_sekwencji) {
-                                continue;
-                            }
-                            else if (n.okienko == q.wierzcholek2.okienko && q.wierzcholek2.nr_sekwencji == g.nr_sekwencji) {
-                                continue;
-                            }
-                        }
-                        if (n.okienko == q.wierzcholek1.okienko) {
-                            gwiazda.push_back(q.wierzcholek1);
-                            graf.erase(graf.begin() + id_erase);
-                        }
-                        else if (n.okienko == q.wierzcholek2.okienko) {
-                            gwiazda.push_back(q.wierzcholek2);
-                            graf.erase(graf.begin() + id_erase);
-                        }
-                        if (gwiazda.size() == 5) {
-                            return gwiazda;
-                        }
-                    }
+    for (auto &n: graf) {
+        gwiazda.push_back(n.wierzcholek1);
+        seq_number[n.wierzcholek1.nr_sekwencji] = 1;
+        cout << "Dodano " << n.wierzcholek1.nr_sekwencji << ' ' << n.wierzcholek1.nr_w_sekwencji << endl;
+        gwiazda.push_back(n.wierzcholek2);
+        seq_number[n.wierzcholek2.nr_sekwencji] = 1;
+        cout << "Dodano " << n.wierzcholek2.nr_sekwencji << ' ' << n.wierzcholek2.nr_w_sekwencji << endl;
+        for (auto &m : graf) {
+            if (m.wierzcholek1.okienko == n.wierzcholek1.okienko && m.wierzcholek1.nr_sekwencji == n.wierzcholek1.nr_sekwencji && m.wierzcholek1.nr_w_sekwencji == n.wierzcholek1.nr_w_sekwencji && seq_number[m.wierzcholek2.nr_sekwencji] == 0) {
+                gwiazda.push_back(m.wierzcholek2);
+                seq_number[m.wierzcholek2.nr_sekwencji] = 1;
+                cout << "Dodano " << m.wierzcholek2.nr_sekwencji << ' ' << m.wierzcholek2.nr_w_sekwencji << endl;
+                if (gwiazda.size() == 5) {
+                    return gwiazda;
                 }
-                gwiazda.clear();
             }
-            id_erase++;
+            if (m.wierzcholek2.okienko == n.wierzcholek1.okienko && m.wierzcholek2.nr_sekwencji == n.wierzcholek1.nr_sekwencji && m.wierzcholek2.nr_w_sekwencji == n.wierzcholek1.nr_w_sekwencji && seq_number[m.wierzcholek1.nr_sekwencji] == 0) {
+                gwiazda.push_back(m.wierzcholek1);
+                seq_number[m.wierzcholek1.nr_sekwencji] = 1;
+                cout << "Dodano " << m.wierzcholek1.nr_sekwencji << ' ' << m.wierzcholek1.nr_w_sekwencji << endl;
+                if (gwiazda.size() == 5) {
+                    return gwiazda;
+                }
+            }
         }
+        gwiazda.clear();
+        seq_number = {0, 0, 0, 0, 0, 0};
+        cout << "Usunieto postep." << endl;
     }
-    try {
-        throw Exception("\nGwiazda nie istnieje dla podanych parametrow.");
-    } catch (Exception mce) {
-        cout << mce.what();
-    }
+    cout << "\n\nWYNIK:\nGwiazda nie istnieje dla podanych parametrow.";
+    exit(0);
 }
+
+
 
 void pair_up(char letter, int cred, int sequence_id) {
     if (sequence_id == 1)
@@ -101,7 +90,7 @@ int main() {
     // otwieranie plikow
 
     ifstream fastafile;
-    fastafile.open("C:\\Users\\Administrator\\CLionProjects\\algorytmy_kombinatoryczne_3\\instancja1.fasta",
+    fastafile.open("C:\\Users\\Administrator\\CLionProjects\\algorytmy_kombinatoryczne_3\\instancja2.fasta",
                    fstream::in);
 
     if (!fastafile) {
@@ -110,7 +99,7 @@ int main() {
     }
 
     ifstream qualfile;
-    qualfile.open("C:\\Users\\Administrator\\CLionProjects\\algorytmy_kombinatoryczne_3\\instancja1.qual", fstream::in);
+    qualfile.open("C:\\Users\\Administrator\\CLionProjects\\algorytmy_kombinatoryczne_3\\instancja2.qual", fstream::in);
 
     if (!qualfile) {
         cout << "Blad otwierania pliku typu .qual." << endl;
@@ -118,7 +107,7 @@ int main() {
     }
 
     ifstream qual_pomoc;
-    qual_pomoc.open("C:\\Users\\Administrator\\CLionProjects\\algorytmy_kombinatoryczne_3\\instancja1.qual",
+    qual_pomoc.open("C:\\Users\\Administrator\\CLionProjects\\algorytmy_kombinatoryczne_3\\instancja2.qual",
                     fstream::in);
 
     if (!qual_pomoc) {
